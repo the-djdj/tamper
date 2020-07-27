@@ -18,9 +18,11 @@ Once there has been some activity in your folder, the output will start to look 
 $ tamper -d ~
 Searching for files
 Writing tamper log to /home/<user>/.tamper/Mon_30_Feb_2020_15:09:42_
+
 The following files have been added/modified:
 /home/danj/tamper/test/file
 /home/danj/tamper/test/schedule
+
 The following files have been deleted:
 /home/danj/tamper/test/document
 ```
