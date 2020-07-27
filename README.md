@@ -6,7 +6,9 @@ To use tamper, simply type
 ```shell
 $ tamper -d <directory>
 ```
-In the example above, `<directory>` refers to the directory that you want to examine. The first time you run the script you will get an output looking something like this:
+In the example above, `<directory>` refers to the directory that you want to examine. If the `-d <directory` flag is ommitted, tamper will default to the current user's home directory.
+
+The first time you run the script you will get an output looking something like this:
 ```
 $ tamper -d ~
 Searching for files
@@ -27,5 +29,19 @@ The following files have been deleted:
 /home/<user>/tamper/test/document
 ```
 
+### Reset
+If you want to reset the tracking for a folder, creating a clean slate, use:
+```shell
+$ tamper -r [-d <directory>]
+```
+This will remove the logs of the previous runs, forcing tamper to accept the current directory as the original. This doesn't alter any of your files, just resets the tracking
+
+### Help
+If ever you're in doubt, simply use
+```shell
+$ tamper -h
+```
+to see all of the arguments available
+
 ## Dependencies
-Tamper makes use of [shflags](https://github.com/kward/shflags) for argument handling, but it will download this automatically. Just make sure you have an internet connection on your first run!
+Tamper makes use of [shflags](https://github.com/kward/shflags) for argument handling, but will download this automatically. Just make sure you have an internet connection on your first run!
