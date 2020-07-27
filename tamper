@@ -73,12 +73,12 @@ if [ $(ls -1 $FLAGS_scandir/.tamper/ | wc -l) -gt 1 ]; then
 	delete=$(cd $FLAGS_scandir/.tamper/ && ls -t | head -n 2 | xargs diff --changed-group-format="%>" --unchanged-group-format="")
 	
 	if [ -n "$create" ]; then
-		echo "The following files have been added/modified:"
+		echo -e "\nThe following files have been added/modified:"
 		echo "$create" | cut -d ' ' -f 2
 	fi
 
 	if [ -n "$delete" ]; then
-		echo "The following files have been deleted:"
+		echo -e "\nThe following files have been deleted:"
 		echo "$delete" | cut -d ' ' -f 2
 	fi
 
