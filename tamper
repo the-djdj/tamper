@@ -30,6 +30,7 @@ fi
 
 DEFINE_string 'scandir' '~' 'The directory to scan' 'd'
 DEFINE_boolean 'reset' false 'Resets the tracking for this directory' 'r'
+DEFINE_boolean 'trace' true 'Tracks changes and writes to the logs' 't'
 
 # parse command line
 FLAGS "$@" || exit 1
@@ -92,5 +93,9 @@ if [ $(ls -1 $FLAGS_scandir/.tamper/ | wc -l) -gt 1 ]; then
 	fi
 else
 	echo "Run tamper again to detect changes."
+fi
+
+if [ "$FLAGS_trace" -eq 1 ]; then
+	rm $output
 fi
 # -----------------------------------------------------------------
