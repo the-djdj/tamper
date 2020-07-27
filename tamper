@@ -30,7 +30,7 @@ fi
 
 DEFINE_string 'scandir' '~' 'The directory to scan' 'd'
 DEFINE_boolean 'reset' false 'Resets the tracking for this directory' 'r'
-DEFINE_boolean 'trace' true 'Tracks changes and writes to the logs' 't'
+DEFINE_boolean 'log' true 'Specifies whether or not to write current changes to the logs' 'l'
 
 # parse command line
 FLAGS "$@" || exit 1
@@ -67,7 +67,9 @@ output=$FLAGS_scandir/.tamper/$(date -R | sed -r 's/[, ]+/_/g' | cut -d '+' -f 1
 mkdir -p $FLAGS_scandir/.tamper/
 touch $output
 
-echo "Writing tamper log to $(realpath $output)"
+if [ "$FLAGS_log" -eq 0 ]; then
+	echo "Writing tamper log to $(realpath $output)"
+fi
 
 IFS=$'\n'
 for file in $files; do
@@ -95,7 +97,7 @@ else
 	echo "Run tamper again to detect changes."
 fi
 
-if [ "$FLAGS_trace" -eq 1 ]; then
+if [ "$FLAGS_log" -eq 1 ]; then
 	rm $output
 fi
 # -----------------------------------------------------------------
