@@ -1,0 +1,91 @@
+#!/bin/bash
+# ------------------------------------------------------------------
+# [the_DJDJ] tamper
+#          A quick system for checking if any files have changed in
+#          a given directory or subdirectory
+#
+#          This script uses shFlags -- Advanced command-line flag
+#          library for Unix shell scripts.
+#          http://code.google.com/p/shflags/
+#
+# Dependency:
+#     http://shflags.googlecode.com/svn/trunk/source/1.0/src/shflags
+# ------------------------------------------------------------------
+VERSION=0.1.0
+SUBJECT=tamper
+USAGE="Usage: tamper -hv args"
+
+# --- Option processing --------------------------------------------
+if [ $# == 0 ] ; then
+	    echo $USAGE
+		    exit 1;
+fi
+
+if [ ! -f shflags ]; then
+	wget -q https://raw.githubusercontent.com/kward/shflags/master/shflags
+	chmod +x shflags
+fi
+
+. ./shflags
+
+DEFINE_string 'scandir' '~' 'The directory to scan' 'd'
+
+# parse command line
+FLAGS "$@" || exit 1
+eval set -- "${FLAGS_ARGV}"
+
+shift $(($OPTIND - 1))
+
+param1=$1
+param2=$2
+
+# --- Locks -------------------------------------------------------
+LOCK_FILE=/tmp/${SUBJECT}.lock
+
+if [ -f "$LOCK_FILE" ]; then
+	echo "Script is already running"
+	exit
+fi
+
+trap "rm -f $LOCK_FILE" EXIT
+touch $LOCK_FILE
+
+# -- Body ---------------------------------------------------------
+#  SCRIPT LOGIC GOES HERE
+echo "Searching for files"
+
+files=$(find $FLAGS_scandir/ -path $FLAGS_scandir/.tamper -prune -o -type f -print)
+
+output=$FLAGS_scandir/.tamper/$(date -R | sed -r 's/[, ]+/_/g' | cut -d '+' -f 1)
+
+mkdir -p $FLAGS_scandir/.tamper/
+touch $output
+
+echo "Writing tamper log to $(realpath $output)"
+
+IFS=$'\n'
+for file in $files; do
+	echo $(sha256sum "$file" | cut -d ' ' -f 1) $(realpath $file) >> $output
+done
+
+if [ $(ls -1 $FLAGS_scandir/.tamper/ | wc -l) -gt 1 ]; then
+	create=$(cd $FLAGS_scandir/.tamper/ && ls -t | head -n 2 | xargs diff --changed-group-format="%<" --unchanged-group-format="")
+	delete=$(cd $FLAGS_scandir/.tamper/ && ls -t | head -n 2 | xargs diff --changed-group-format="%>" --unchanged-group-format="")
+	
+	if [ -n "$create" ]; then
+		echo "The following files have been added/modified:"
+		echo "$create" | cut -d ' ' -f 2
+	fi
+
+	if [ -n "$delete" ]; then
+		echo "The following files have been deleted:"
+		echo "$delete" | cut -d ' ' -f 2
+	fi
+
+	if [ -z "$create" ] && [ -z "$delete" ]; then
+		echo "No files were changed."
+	fi
+else
+	echo "Run tamper again to detect changes."
+fi
+# -----------------------------------------------------------------
