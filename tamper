@@ -29,6 +29,7 @@ fi
 . ./shflags
 
 DEFINE_string 'scandir' '~' 'The directory to scan' 'd'
+DEFINE_boolean 'reset' false 'Resets the tracking for this directory' 'r'
 
 # parse command line
 FLAGS "$@" || exit 1
@@ -52,6 +53,10 @@ touch $LOCK_FILE
 
 # -- Body ---------------------------------------------------------
 #  SCRIPT LOGIC GOES HERE
+if [ "$FLAGS_reset" -eq 0 ]; then
+	rm $FLAGS_scandir/.tamper/*
+fi
+
 echo "Searching for files"
 
 files=$(find $FLAGS_scandir/ -path $FLAGS_scandir/.tamper -prune -o -type f -print)
