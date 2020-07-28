@@ -25,7 +25,7 @@ The following files have been added/modified:
 /home/<user>/tamper/test/file
 /home/<user>/tamper/test/schedule
 
-The following files have been deleted:
+The following files have been deleted/modified:
 /home/<user>/tamper/test/document
 ```
 

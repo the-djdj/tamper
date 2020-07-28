@@ -86,7 +86,7 @@ if [ $(ls -1 $FLAGS_scandir/.tamper/ | wc -l) -gt 1 ]; then
 	fi
 
 	if [ -n "$delete" ]; then
-		echo -e "\nThe following files have been deleted:"
+		echo -e "\nThe following files have been deleted/modified:"
 		echo "$delete" | cut -d ' ' -f 5
 	fi
 
