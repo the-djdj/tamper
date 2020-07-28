@@ -73,7 +73,7 @@ fi
 
 IFS=$'\n'
 for file in $files; do
-	echo $(sha256sum "$file" | cut -d ' ' -f 1) $(realpath $file) >> $output
+	echo $(sha256sum "$file" | cut -d ' ' -f 1) $(ls -l $file | cut -d ' ' -f 1,3-4) $(realpath $file) >> $output
 done
 
 if [ $(ls -1 $FLAGS_scandir/.tamper/ | wc -l) -gt 1 ]; then
@@ -82,12 +82,12 @@ if [ $(ls -1 $FLAGS_scandir/.tamper/ | wc -l) -gt 1 ]; then
 	
 	if [ -n "$create" ]; then
 		echo -e "\nThe following files have been added/modified:"
-		echo "$create" | cut -d ' ' -f 2
+		echo "$create" | cut -d ' ' -f 5
 	fi
 
 	if [ -n "$delete" ]; then
 		echo -e "\nThe following files have been deleted:"
-		echo "$delete" | cut -d ' ' -f 2
+		echo "$delete" | cut -d ' ' -f 5
 	fi
 
 	if [ -z "$create" ] && [ -z "$delete" ]; then
