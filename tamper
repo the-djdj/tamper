@@ -31,6 +31,7 @@ fi
 DEFINE_string 'scandir' '~' 'The directory to scan' 'd'
 DEFINE_boolean 'reset' false 'Resets the tracking for this directory' 'r'
 DEFINE_boolean 'log' true 'Specifies whether or not to write current changes to the logs' 'l'
+DEFINE_boolean 'verbose' false 'Print verbose output' 'v'
 
 # parse command line
 FLAGS "$@" || exit 1
@@ -77,20 +78,29 @@ for file in $files; do
 done
 
 if [ $(ls -1 $FLAGS_scandir/.tamper/ | wc -l) -gt 1 ]; then
-	create=$(cd $FLAGS_scandir/.tamper/ && ls -t | head -n 2 | xargs diff --changed-group-format="%<" --unchanged-group-format="")
-	delete=$(cd $FLAGS_scandir/.tamper/ && ls -t | head -n 2 | xargs diff --changed-group-format="%>" --unchanged-group-format="")
-	
+	FILE_new=$(cd $FLAGS_scandir/.tamper/ && ls -t | head -n 2 | xargs diff --changed-group-format="%<" --unchanged-group-format="")
+	FILE_old=$(cd $FLAGS_scandir/.tamper/ && ls -t | head -n 2 | xargs diff --changed-group-format="%>" --unchanged-group-format="")
+
+	modified=$((echo "$FILE_new" ; echo "$FILE_old") | cut -d ' ' -f 5 | sort | uniq -d)
+	create=$(diff --changed-group-format="%<" --unchanged-group-format="" <(echo $FILE_new | cut -d ' ' -f 5) <(echo "$modified"))
+	delete=$(diff --changed-group-format="%<" --unchanged-group-format="" <(echo $FILE_old | cut -d ' ' -f 5) <(echo "$modified"))
+
+	if [ -n "$modified" ]; then
+		echo -e "\nThe following files have been modified:"
+		echo "$modified"
+	fi
+
 	if [ -n "$create" ]; then
-		echo -e "\nThe following files have been added/modified:"
-		echo "$create" | cut -d ' ' -f 5
+		echo -e "\nThe following files have been added:"
+		echo "$create"
 	fi
 
 	if [ -n "$delete" ]; then
-		echo -e "\nThe following files have been deleted/modified:"
-		echo "$delete" | cut -d ' ' -f 5
+		echo -e "\nThe following files have been deleted:"
+		echo "$delete"
 	fi
 
-	if [ -z "$create" ] && [ -z "$delete" ]; then
+	if [ -z "$modified" ] && [ -z "$create" ] && [ -z "$delete" ]; then
 		echo "No files were changed."
 	fi
 else

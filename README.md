@@ -21,11 +21,14 @@ $ tamper -d ~
 Searching for files
 Writing tamper log to /home/<user>/.tamper/Mon_30_Feb_2020_15:09:42_
 
-The following files have been added/modified:
+The following files have been modified:
+/home/<user>/tamper/test/do_not_modify
+
+The following files have been added:
 /home/<user>/tamper/test/file
 /home/<user>/tamper/test/schedule
 
-The following files have been deleted/modified:
+The following files have been deleted:
 /home/<user>/tamper/test/document
 ```
 
